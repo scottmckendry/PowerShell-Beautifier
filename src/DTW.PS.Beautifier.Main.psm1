@@ -118,12 +118,13 @@ function Get-ValidCommandName {
   process {
     # look up name in lookup table and return
     # if not found (new function added within script), add to list and return
-    if ($MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].ContainsKey($Name)) {
-      $MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].Item($Name)
-    } else {
-      $MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].Add($Name,$Name) > $null
-      $Name
-    }
+    # if ($MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].ContainsKey($Name)) {
+    #   $MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].Item($Name)
+    # } else {
+    #   $MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].Add($Name,$Name) > $null
+    #   $Name
+    # }
+    $Name
   }
 }
 #endregion
