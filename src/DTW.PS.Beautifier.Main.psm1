@@ -474,9 +474,9 @@ function Copy-SourceContentToDestinationStream {
         # so indent lines continued (say cmdlet with many params)
         if ($SourceTokens[$i - 1].Type -eq 'LineContinuation') { $IndentToUse += 1 }
         # add the space prefix - unless it's a cmdlet/function help text
-        if ($IndentToUse -gt 0 -and (!($SourceTokens[$i].Type -eq 'Comment' -and $SourceTokens[$i].Content.ToUpper().Contains('.SYNOPSIS')))) {
-          Add-StringContentToDestinationFileStreamWriter ($IndentText * $IndentToUse)
-        }
+        # if ($IndentToUse -gt 0 -and (!($SourceTokens[$i].Type -eq 'Comment' -and $SourceTokens[$i].Content.ToUpper().Contains('.SYNOPSIS')))) {
+        #   Add-StringContentToDestinationFileStreamWriter ($IndentText * $IndentToUse)
+        # }
       }
       #endregion
 
