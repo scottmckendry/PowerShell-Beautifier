@@ -1,6 +1,6 @@
 # PowerShell Beautifier
 
-A whitespace reformatter and code cleaner for Windows PowerShell and PowerShell Core (all OSes).
+A whitespace reformatter and code cleaner for Windows PowerShell and PowerShell Core (all OSes). 
 
 ## Formatting Matters
 
