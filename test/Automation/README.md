@@ -23,7 +23,7 @@ To use Invoke-RunTestScriptInDockerCoreContainers.ps1 to test the Beautifier:
 Invoke-RunTestScriptInDockerCoreContainers.ps1 -TestImageNames ubuntu16.04
 
 Testing with these values:
-  Test file:        PowerShell-Beautifier/test/Invoke-DTWBeautifyScriptTests.ps1 -Quiet
+  Test file:        PowerShell-Beautifier/test/Invoke-PrettifyScriptTests.ps1 -Quiet
   Docker hub repo:  microsoft/powershell
   Images names:     ubuntu16.04
   Source paths:     C:\code\GitHub\PowerShell-Beautifier
@@ -51,7 +51,7 @@ If you don't specify parameter -TestImageNames it will attempt to test against t
 Invoke-RunTestScriptInDockerCoreContainers.ps1
 
 Testing with these values:
-  Test file:        PowerShell-Beautifier/test/Invoke-DTWBeautifyScriptTests.ps1 -Quiet
+  Test file:        PowerShell-Beautifier/test/Invoke-PrettifyScriptTests.ps1 -Quiet
   Docker hub repo:  microsoft/powershell
   Images names:     ubuntu16.04 centos7 opensuse42.1
   Source paths:     C:\code\GitHub\PowerShell-Beautifier

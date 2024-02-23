@@ -17,7 +17,7 @@ The first time the module is loaded it finds all the valid lookup values current
 The cache files can be regenerated at any time.  If you have a number of custom modules and/or 3rd-party modules that you use often, you may want to have the exported functions and aliases added to the cache file.  This is easy to do:
 1. Import all your custom and 3rd-party modules
 2. Import the PowerShell Beautifier
-3. Run function: Update-DTWRegenerateLookupTableValuesFile
+3. Run function: Update-RegenerateLookupTableValuesFile
 That will recreate the cache file.
 
 ### Tokenize talk
@@ -108,7 +108,7 @@ Here are the lookup tables:
 
 These lookup hash tables are stored as PrivateData variables in the module.  This gives us a pseudo 'module-scope', allowing us to help split up functions using this data across multiple files.  It also allows us to access the contents of these lookup tables from outside the module for debugging purposes.
 
-When the module is loaded, the lookup tables are created but are empty.  It's not until Edit-DTWBeautifyScript is first called that they are populated.  Note: you can import the module and force the population by calling the function *Initialize-DTWBeautifyValidNames*.
+When the module is loaded, the lookup tables are created but are empty.  It's not until Invoke-PrettifyScript is first called that they are populated.  Note: you can import the module and force the population by calling the function *Initialize-PrettifyValidNames*.
 
 Once populated you can see the values in the module's PrivateData, i.e.
 ```

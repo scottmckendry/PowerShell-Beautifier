@@ -40,14 +40,14 @@ be output and $true will not be returned.
 .EXAMPLE
 .\Invoke-RunTestScriptInDockerCoreContainers.ps1 `
   -SourcePaths 'C:\Path\To\PowerShell-Beautifier' `
-  -TestFileAndParams 'PowerShell-Beautifier/test/Invoke-DTWBeautifyScriptTests.ps1 -Quiet' `
+  -TestFileAndParams 'PowerShell-Beautifier/test/Invoke-PrettifyScriptTests.ps1 -Quiet' `
   -TestImageNames ('ubuntu-16.04','centos-7')
 
 Key details here:
  - C:\Path\To\PowerShell-Beautifier is a folder that gets copied to each container.
  - The test script is located under that folder, so including that source folder name,
-   the path is: PowerShell-Beautifier/test/Invoke-DTWBeautifyScriptTests.ps1
- - -Quiet is a parameter of Invoke-DTWBeautifyScriptTests.ps1; when specified if no
+   the path is: PowerShell-Beautifier/test/Invoke-PrettifyScriptTests.ps1
+ - -Quiet is a parameter of Invoke-PrettifyScriptTests.ps1; when specified if no
    errors occur (knock on wood) only $true is returned. This script looks for $true
    to know the test on the current container was successful.
  - Tests with two images: microsoft/powershell:ubuntu-16.04 and microsoft/powershell:centos-7
@@ -75,7 +75,7 @@ Key details here:
 # script for more information about running this script.
 param(
   [string[]]$SourcePaths = @((Split-Path -Path (Split-Path -Path (Split-Path -Path $PSCommandPath -Parent) -Parent) -Parent)),
-  [string]$TestFileAndParams = 'PowerShell-Beautifier/test/Invoke-DTWBeautifyScriptTests.ps1 -Quiet',
+  [string]$TestFileAndParams = 'PowerShell-Beautifier/test/Invoke-PrettifyScriptTests.ps1 -Quiet',
   [string[]]$TestImageNames = @('ubuntu-16.04','centos-7'),
   [string]$DockerHubRepository = 'microsoft/powershell',
   [switch]$Quiet

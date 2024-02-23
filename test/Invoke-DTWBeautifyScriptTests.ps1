@@ -88,7 +88,7 @@ the test script.
 #>
 
 
-#region Function: Invoke-DTWFileDiff
+#region Function: Invoke-FileDiff
 
 <#
 .SYNOPSIS
@@ -108,7 +108,7 @@ Path to first file.
 .PARAMETER Path2
 Path to second file.
 #>
-function Invoke-DTWFileDiff {
+function Invoke-FileDiff {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -164,8 +164,8 @@ function Invoke-DTWFileDiff {
       [string[]]$Params = $Path1,$Path2
       & $Cmd $Params
     } else {
-      $File1Content = Get-Content -Path $Path1 -Encoding (Get-DTWFileEncodingSystemProviderNameFromTypeName -Name ((Get-DTWFileEncoding $Path1).EncodingName))
-      $File2Content = Get-Content -Path $Path2 -Encoding (Get-DTWFileEncodingSystemProviderNameFromTypeName -Name ((Get-DTWFileEncoding $Path2).EncodingName))
+      $File1Content = Get-Content -Path $Path1 -Encoding (Get-FileEncodingSystemProviderNameFromTypeName -Name ((Get-FileEncoding $Path1).EncodingName))
+      $File2Content = Get-Content -Path $Path2 -Encoding (Get-FileEncodingSystemProviderNameFromTypeName -Name ((Get-FileEncoding $Path2).EncodingName))
       Compare-Object $File1Content $File2Content -CaseSensitive | ForEach-Object { Write-Output "        $($_.InputObject + '   ' + $_.SideIndicator)" }
     }
   }
@@ -173,14 +173,14 @@ function Invoke-DTWFileDiff {
 #endregion
 
 
-#region Function: Test-DTWProcessFileCompareOutputTestCorrect
+#region Function: Test-ProcessFileCompareOutputTestCorrect
 
 <#
 .SYNOPSIS
 Runs a full beautify test for a single file.
 .DESCRIPTION
 Runs a full beautify test for a single file.  Takes the file $InputBadPath,
-runs through Edit-DTWBeautifyScript saving result to $OutputTestPath.  Then
+runs through Invoke-PrettifyScript saving result to $OutputTestPath.  Then
 compares files contents at $OutputTestPath and $OutputCorrectPath; if not the
 same, launches diff.
 .PARAMETER InputBadPath
@@ -190,7 +190,7 @@ Path to output result file - result of InputBadPath run through beautifier.
 .PARAMETER OutputCorrectPath
 Path to output correct file - file with correct results.
 #>
-function Test-DTWProcessFileCompareOutputTestCorrect {
+function Test-ProcessFileCompareOutputTestCorrect {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -249,7 +249,7 @@ function Test-DTWProcessFileCompareOutputTestCorrect {
     if (Test-Path -Path $OutputTestPath) { Remove-Item -Path $OutputTestPath -Force }
 
     try {
-      #region Specify parameters for Edit-DTWBeautifyScript call
+      #region Specify parameters for Invoke-PrettifyScript call
       # note: we are specifying Unix standard LF as newline; for any machine pulling the test files
       # from git, the line endings will most likely be LF and not Windows CRLF
       # regardless, the file comparison functionality will ignore the LF / CRLF difference
@@ -266,15 +266,15 @@ function Test-DTWProcessFileCompareOutputTestCorrect {
       if (!$Quiet) { Write-Output ('  File: ' + (Split-Path -Path $InputBadPath -Leaf)) }
       #endregion
 
-      Edit-DTWBeautifyScript @Params
+      Invoke-PrettifyScript @Params
 
       # compare result in test folder with correct folder
-      if ($false -eq (Compare-DTWFilesIncludingBOM -Path1 $OutputTestPath -Path2 $OutputCorrectPath)) {
+      if ($false -eq (Compare-FilesIncludingBOM -Path1 $OutputTestPath -Path2 $OutputCorrectPath)) {
         $script:AllTestsPassed = $false
         Write-Output '    Files do not match. Opening diff of these files:'
         Write-Output "      $OutputTestPath"
         Write-Output "      $OutputCorrectPath"
-        Invoke-DTWFileDiff -Path1 $OutputTestPath -Path2 $OutputCorrectPath
+        Invoke-FileDiff -Path1 $OutputTestPath -Path2 $OutputCorrectPath
       }
     } catch {
       Write-Output 'An error occurred during processing files'
@@ -343,7 +343,7 @@ if ($false -eq (Test-Path -Path $RootOutputTestFolderPath)) {
 }
 #endregion
 
-# assume all tests passed, set to false (in Test-DTWProcessFileCompareOutputTestCorrect) if one fails
+# assume all tests passed, set to false (in Test-ProcessFileCompareOutputTestCorrect) if one fails
 [bool]$AllTestsPassed = $true
 
 #region Main folder processing
@@ -395,7 +395,7 @@ $TestFolders | ForEach-Object {
     $OutputTestPath = Join-Path -Path $OutputTestFolderPath -ChildPath $SourceFileName
     $OutputCorrectPath = Join-Path -Path $OutputCorrectFolderPath -ChildPath $SourceFileName
 
-    Test-DTWProcessFileCompareOutputTestCorrect -InputBadPath $InputBadPath -OutputTestPath $OutputTestPath -OutputCorrectPath $OutputCorrectPath
+    Test-ProcessFileCompareOutputTestCorrect -InputBadPath $InputBadPath -OutputTestPath $OutputTestPath -OutputCorrectPath $OutputCorrectPath
   }
 }
 #endregion
@@ -417,9 +417,9 @@ if ($TestFolders -contains 'Whitespace') {
   $CorrectIndentationFileFourspace = $OutputTestIndentationFileFourspace.Replace($OutputTestFolderName,$CorrectFolderName)
   $CorrectIndentationFileTab = $OutputTestIndentationFileTab.Replace($OutputTestFolderName,$CorrectFolderName)
 
-  Test-DTWProcessFileCompareOutputTestCorrect -InputBadPath $InputBadIndentationFile -OutputTestPath $OutputTestIndentationFileTwoSpace -OutputCorrectPath $CorrectIndentationFileTwoSpace -IndentText TwoSpaces
-  Test-DTWProcessFileCompareOutputTestCorrect -InputBadPath $InputBadIndentationFile -OutputTestPath $OutputTestIndentationFileFourspace -OutputCorrectPath $CorrectIndentationFileFourspace -IndentText FourSpaces
-  Test-DTWProcessFileCompareOutputTestCorrect -InputBadPath $InputBadIndentationFile -OutputTestPath $OutputTestIndentationFileTab -OutputCorrectPath $CorrectIndentationFileTab -IndentText Tabs
+  Test-ProcessFileCompareOutputTestCorrect -InputBadPath $InputBadIndentationFile -OutputTestPath $OutputTestIndentationFileTwoSpace -OutputCorrectPath $CorrectIndentationFileTwoSpace -IndentText TwoSpaces
+  Test-ProcessFileCompareOutputTestCorrect -InputBadPath $InputBadIndentationFile -OutputTestPath $OutputTestIndentationFileFourspace -OutputCorrectPath $CorrectIndentationFileFourspace -IndentText FourSpaces
+  Test-ProcessFileCompareOutputTestCorrect -InputBadPath $InputBadIndentationFile -OutputTestPath $OutputTestIndentationFileTab -OutputCorrectPath $CorrectIndentationFileTab -IndentText Tabs
 
 }
 #endregion

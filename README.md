@@ -64,10 +64,10 @@ Import-Module .\PowerShell-Beautifier.psd1
 ```
 3. Confirm it is loaded correctly:
 ```
-Get-Help Edit-DTWBeautifyScript
+Get-Help Invoke-PrettifyScript
 
 NAME
-    Edit-DTWBeautifyScript
+    Invoke-PrettifyScript
 
 SYNOPSIS
     Cleans PowerShell script: re-indents code with spaces or tabs, cleans
@@ -77,7 +77,7 @@ SYNOPSIS
 
 
 SYNTAX
-    Edit-DTWBeautifyScript [-SourcePath] <String> [[-DestinationPath] <String>] [[-IndentType] <String>]
+    Invoke-PrettifyScript [-SourcePath] <String> [[-DestinationPath] <String>] [[-IndentType] <String>]
     [-StandardOutput] [[-NewLine] <String>] [<CommonParameters>]
     [<CommonParameters>]
 
@@ -99,33 +99,33 @@ So, assuming you've imported the module, how do you use it?
 ### Run on single file updating in place with 2 spaces indentation
 This rewrites the source file in place.  Two spaces is the default indent step so IndentType is not specified.
 ```
-Edit-DTWBeautifyScript C:\temp\MyFile.ps1
+Invoke-PrettifyScript C:\temp\MyFile.ps1
 ```
 
 ### Run on single file but indent with tabs
 This rewrites the source file in place using a tab at the indent step.
 ```
-Edit-DTWBeautifyScript C:\temp\MyFile.ps1 -IndentType Tabs
+Invoke-PrettifyScript C:\temp\MyFile.ps1 -IndentType Tabs
 ```
 
 ### Run on single file outputting to new file with 2 spaces indentation
 This doesn't modify the source file; it outputs the clean version to a new file.  Also uses the default indent step (2 spaces).
 ```
-Edit-DTWBeautifyScript -SourcePath C:\temp\MyFile.ps1 -DestinationPath c:\temp\MyFile_AFTER.ps1
+Invoke-PrettifyScript -SourcePath C:\temp\MyFile.ps1 -DestinationPath c:\temp\MyFile_AFTER.ps1
 ```
 
 ### Run on multiple files in a directory structure
 Time for the pipeline.
 ```
-Get-ChildItem -Path c:\temp -Include *.ps1,*.psm1 -Recurse | Edit-DTWBeautifyScript
+Get-ChildItem -Path c:\temp -Include *.ps1,*.psm1 -Recurse | Invoke-PrettifyScript
 ```
 
-Note: if you don't include the file extension filtering you'll need some other way to ignore folders (i.e. ignore PSIsContainer -eq $true) as Edit-DTWBeautifyScript will error for those.
+Note: if you don't include the file extension filtering you'll need some other way to ignore folders (i.e. ignore PSIsContainer -eq $true) as Invoke-PrettifyScript will error for those.
 
 ### Get cleaned content via standard output rather than updating file
 If you want to receive the beautified content via stdout (most likely if you are calling from an external editor), use the -StandardOutput (or -StdOut) parameter:
 ```
-Edit-DTWBeautifyScript C:\temp\MyFile.ps1 -StandardOutput
+Invoke-PrettifyScript C:\temp\MyFile.ps1 -StandardOutput
 ```
 
 When using -StandardOutput, the SourcePath is used for content but not updated, DestinationPath is ignored (if passed).  If an error occurs (syntax error in user script), no content is returned via stdout but stderr will have a concise error that can be displayed to the user.
@@ -135,7 +135,7 @@ By default, when writing the file the beautifier will use the host OS's style fo
 
 For example, to force newline endings to be LF
 ```
-Edit-DTWBeautifyScript C:\temp\MyFile.ps1 -NewLine LF
+Invoke-PrettifyScript C:\temp\MyFile.ps1 -NewLine LF
 ```
 
 

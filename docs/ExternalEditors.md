@@ -1,7 +1,7 @@
 # Support for Text Editors
 Once of the best ways to get this beautifier functionality into the hands of people who need it is to make it easily accessible from text editors like Atom, VS Code, Sublime, PowerShell ISE and others.
 
-Contact me if you want to help get this beautifier working from your favorite editor.  So far changes have been made to support the Atom-Beautify project (#2 StandardOutput parameter changes).  Since the PowerShell Beautifier can save to original file, save to new file and/or return to stdout, all the basic access should be complete.  But again, let me know if it doesn't.
+Contact me if you want to help get this beautifier working from your favorite editor.  So far changes have been made to support the Atom-Prettify project (#2 StandardOutput parameter changes).  Since the PowerShell Beautifier can save to original file, save to new file and/or return to stdout, all the basic access should be complete.  But again, let me know if it doesn't.
 
 These are some of the anticipated challenges to add support for any particular text editor:
 
@@ -10,12 +10,12 @@ These are some of the anticipated challenges to add support for any particular t
 This beautifier runs from *within* PowerShell; it requires PowerShell to work.  So the first step to getting this to work from within an editor will be to figure out how to launch a PowerShell instance with a specific command from the editor.  It will look something like this:
 
 ```
-powershell.exe -NoProfile -NoLogo -Command "Import-Module <path to>\PowerShell-Beautifier.psd1; Edit-DTWBeautifyScript -SourcePath <path to current file>"
+powershell.exe -NoProfile -NoLogo -Command "Import-Module <path to>\PowerShell-Beautifier.psd1; Invoke-PrettifyScript -SourcePath <path to current file>"
 ```
 
 If you want content via stdout, it will look like:
 ```
-powershell.exe -NoProfile -NoLogo -Command "Import-Module <path to>\PowerShell-Beautifier.psd1; Edit-DTWBeautifyScript -StandardOutput -SourcePath <path to current file>"
+powershell.exe -NoProfile -NoLogo -Command "Import-Module <path to>\PowerShell-Beautifier.psd1; Invoke-PrettifyScript -StandardOutput -SourcePath <path to current file>"
 ```
 
 

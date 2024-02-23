@@ -16,9 +16,9 @@ for more information.  I hope you enjoy using this utility!
 
 Set-StrictMode -Version 2
 
-#region Functions: Add-DTWFileEncodingByteOrderMarker, Get-DTWFileEncoding
+#region Functions: Add-FileEncodingByteOrderMarker, Get-FileEncoding
 
-#region Function: Add-DTWFileEncodingByteOrderMarker
+#region Function: Add-FileEncodingByteOrderMarker
 
 <#
 .SYNOPSIS
@@ -29,10 +29,10 @@ Adds a byte order marker file encoding to a file.
 Number of bytes to check, by default check first 10000 character.
 Depending on the size of your file, this might be the entire content of your file.
 .EXAMPLE
-Add-DTWFileEncodingByteOrderMarker 'c:\temp\testfile.ps1' [System.Text.Encoding]:UTF8
+Add-FileEncodingByteOrderMarker 'c:\temp\testfile.ps1' [System.Text.Encoding]:UTF8
 <Adds UTF8 encoding to file testfile.ps1>
 #>
-function Add-DTWFileEncodingByteOrderMarker {
+function Add-FileEncodingByteOrderMarker {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -46,18 +46,18 @@ function Add-DTWFileEncodingByteOrderMarker {
   )
   #endregion
   process {
-    [string]$EncodingFileSystemProvider = Get-DTWFileEncodingSystemProviderNameFromTypeName $FileEncoding.EncodingName
+    [string]$EncodingFileSystemProvider = Get-FileEncodingSystemProviderNameFromTypeName $FileEncoding.EncodingName
     [string[]]$Content = Get-Content -Path $Path -Encoding $EncodingFileSystemProvider
     # get new file encoding object - this one will have BOM - and use it for rewriting the file back in place
-    [System.Text.Encoding]$NewFileEncoding = Get-DTWFileEncodingTypeFromName -Name $FileEncoding.EncodingName
+    [System.Text.Encoding]$NewFileEncoding = Get-FileEncodingTypeFromName -Name $FileEncoding.EncodingName
     [System.IO.File]::WriteAllLines($Path,$Content,$NewFileEncoding)
   }
 }
-Export-ModuleMember -Function Add-DTWFileEncodingByteOrderMarker
+Export-ModuleMember -Function Add-FileEncodingByteOrderMarker
 #endregion
 
 
-#region Function: Get-DTWFileEncoding
+#region Function: Get-FileEncoding
 
 <#
 .SYNOPSIS
@@ -108,7 +108,7 @@ DecoderFallback   : System.Text.DecoderReplacementFallback
 IsReadOnly        : True
 CodePage          : 1201
 #>
-function Get-DTWFileEncoding {
+function Get-FileEncoding {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -276,15 +276,15 @@ function Get-DTWFileEncoding {
     #endregion
   }
 }
-Export-ModuleMember -Function Get-DTWFileEncoding
+Export-ModuleMember -Function Get-FileEncoding
 #endregion
 
 #endregion
 
 
-#region Functions: Get-DTWFileEncodingSystemProviderNameFromTypeName, Get-DTWFileEncodingTypeFromName
+#region Functions: Get-FileEncodingSystemProviderNameFromTypeName, Get-FileEncodingTypeFromName
 
-#region Function: Get-DTWFileEncodingSystemProviderNameFromTypeName
+#region Function: Get-FileEncodingSystemProviderNameFromTypeName
 
 <#
 .SYNOPSIS
@@ -303,13 +303,13 @@ Also, sorry for the long function name.
 .PARAMETER Name
 A name value of encoding type, such as Ascii, US-ASCII, UTF8, utf-8, etc.
 .EXAMPLE
-Get-DTWFileEncodingSystemProviderNameFromTypeName 'utf-8'
+Get-FileEncodingSystemProviderNameFromTypeName 'utf-8'
 UTF8
 .EXAMPLE
-Get-DTWFileEncodingSystemProviderNameFromTypeName 'Unicode (UTF-8)'
+Get-FileEncodingSystemProviderNameFromTypeName 'Unicode (UTF-8)'
 UTF8
 #>
-function Get-DTWFileEncodingSystemProviderNameFromTypeName {
+function Get-FileEncodingSystemProviderNameFromTypeName {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -367,11 +367,11 @@ function Get-DTWFileEncodingSystemProviderNameFromTypeName {
     $Lookup.$Name
   }
 }
-Export-ModuleMember -Function Get-DTWFileEncodingSystemProviderNameFromTypeName
+Export-ModuleMember -Function Get-FileEncodingSystemProviderNameFromTypeName
 #endregion
 
 
-#region Function: Get-DTWFileEncodingTypeFromName
+#region Function: Get-FileEncodingTypeFromName
 
 <#
 .SYNOPSIS
@@ -385,13 +385,13 @@ A name value of encoding type, such as Ascii, US-ASCII, UTF8, utf-8, etc.
 If specified, type will not include Byte Order Marker. Ignored if specified for
 Ascii file encoding.
 .EXAMPLE
-Get-DTWFileEncodingTypeFromName 'utf-8'
+Get-FileEncodingTypeFromName 'utf-8'
 <returns UTF8 encoding with BOM>
 .EXAMPLE
-Get-DTWFileEncodingTypeFromName 'UTF8' -NoBOM
+Get-FileEncodingTypeFromName 'UTF8' -NoBOM
 UTF8
 #>
-function Get-DTWFileEncodingTypeFromName {
+function Get-FileEncodingTypeFromName {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -421,33 +421,33 @@ function Get-DTWFileEncodingTypeFromName {
     }
   }
 }
-Export-ModuleMember -Function Get-DTWFileEncodingTypeFromName
+Export-ModuleMember -Function Get-FileEncodingTypeFromName
 #endregion
 
 #endregion
 
 
-#region Functions: Compare-DTWFiles, Compare-DTWFilesIncludingBOM, Compare-DTWFilesIgnoringBOM
+#region Functions: Compare-Files, Compare-FilesIncludingBOM, Compare-FilesIgnoringBOM
 
-#region Function: Compare-DTWFiles
+#region Function: Compare-Files
 
 <#
 .SYNOPSIS
 Compares two files, returns $true if same, $false otherwise
 .DESCRIPTION
 Compares two files, returns $true if same, $false otherwise. If both files have a
-BOM, uses Compare-DTWFilesIncludingBOM. If one file has a BOM and the other does
-not, uses: Compare-DTWFilesIgnoringBOM.
+BOM, uses Compare-FilesIncludingBOM. If one file has a BOM and the other does
+not, uses: Compare-FilesIgnoringBOM.
 Line ending differences (Windows-style vs. Unix-style) are ignored during compare.
 .PARAMETER Path1
 Path to first file
 .PARAMETER Path2
 Path to second file
 .EXAMPLE
-Compare-DTWFiles 'c:\temp\file1.ps1' 'c:\temp\file2.ps1'
+Compare-Files 'c:\temp\file1.ps1' 'c:\temp\file2.ps1'
 $true  # files have same contents in this case
 #>
-function Compare-DTWFiles {
+function Compare-Files {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -494,18 +494,18 @@ function Compare-DTWFiles {
     #endregion
     #endregion
 
-    if (((Get-DTWFileEncoding $Path1).GetPreamble().Length) -ne ((Get-DTWFileEncoding $Path2).GetPreamble().Length)) {
-      Compare-DTWFilesIgnoringBOM -Path1 $Path1 -Path2 $Path2
+    if (((Get-FileEncoding $Path1).GetPreamble().Length) -ne ((Get-FileEncoding $Path2).GetPreamble().Length)) {
+      Compare-FilesIgnoringBOM -Path1 $Path1 -Path2 $Path2
     } else {
-      Compare-DTWFilesIncludingBOM -Path1 $Path1 -Path2 $Path2
+      Compare-FilesIncludingBOM -Path1 $Path1 -Path2 $Path2
     }
   }
 }
-Export-ModuleMember -Function Compare-DTWFiles
+Export-ModuleMember -Function Compare-Files
 #endregion
 
 
-#region Function: Compare-DTWFilesIncludingBOM
+#region Function: Compare-FilesIncludingBOM
 
 <#
 .SYNOPSIS
@@ -518,10 +518,10 @@ Path to first file
 .PARAMETER Path2
 Path to second file
 .EXAMPLE
-Compare-DTWFilesIncludingBOM 'c:\temp\file1.ps1' 'c:\temp\file2.ps1'
+Compare-FilesIncludingBOM 'c:\temp\file1.ps1' 'c:\temp\file2.ps1'
 $true  # files have same contents in this case
 #>
-function Compare-DTWFilesIncludingBOM {
+function Compare-FilesIncludingBOM {
   #region Function parameters
   [CmdletBinding()]
   [OutputType([bool])]
@@ -596,11 +596,11 @@ function Compare-DTWFilesIncludingBOM {
     #endregion
   }
 }
-Export-ModuleMember -Function Compare-DTWFilesIncludingBOM
+Export-ModuleMember -Function Compare-FilesIncludingBOM
 #endregion
 
 
-#region Function: Compare-DTWFilesIgnoringBOM
+#region Function: Compare-FilesIgnoringBOM
 
 <#
 .SYNOPSIS
@@ -613,10 +613,10 @@ Path to first file
 .PARAMETER Path2
 Path to second file
 .EXAMPLE
-Compare-DTWFilesIgnoringBOM 'c:\temp\file1.ps1' 'c:\temp\file2.ps1'
+Compare-FilesIgnoringBOM 'c:\temp\file1.ps1' 'c:\temp\file2.ps1'
 $true  # files have same contents in this case but one has a BOM and the other does not
 #>
-function Compare-DTWFilesIgnoringBOM {
+function Compare-FilesIgnoringBOM {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -663,8 +663,8 @@ function Compare-DTWFilesIgnoringBOM {
     #endregion
     #endregion
 
-    $File1Content = Get-Content -Path $Path1 -Encoding (Get-DTWFileEncodingSystemProviderNameFromTypeName -Name ((Get-DTWFileEncoding $Path1).EncodingName))
-    $File2Content = Get-Content -Path $Path2 -Encoding (Get-DTWFileEncodingSystemProviderNameFromTypeName -Name ((Get-DTWFileEncoding $Path2).EncodingName))
+    $File1Content = Get-Content -Path $Path1 -Encoding (Get-FileEncodingSystemProviderNameFromTypeName -Name ((Get-FileEncoding $Path1).EncodingName))
+    $File2Content = Get-Content -Path $Path2 -Encoding (Get-FileEncodingSystemProviderNameFromTypeName -Name ((Get-FileEncoding $Path2).EncodingName))
     # replace any windows line endings with Unix line endings so doesn't affect comparison;
     # depending on a user's git settings, the test files may or may not have windows line
     # endings; because we need to compare the files at a binary level, safest thing to do
@@ -675,7 +675,7 @@ function Compare-DTWFilesIgnoringBOM {
     $null -eq (Compare-Object $File1Content $File2Content -CaseSensitive)
   }
 }
-Export-ModuleMember -Function Compare-DTWFilesIgnoringBOM
+Export-ModuleMember -Function Compare-FilesIgnoringBOM
 #endregion
 
 #endregion

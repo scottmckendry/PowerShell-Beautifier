@@ -3,7 +3,7 @@
 ## The easiest way to test
 Back up your file first to a temp location (can't say this enough) or use the DestinationPath parameter:
 ```
-Edit-DTWBeautifyScript -SourcePath C:\temp\Before.ps1 -DestinationPath c:\temp\After.ps1
+Invoke-PrettifyScript -SourcePath C:\temp\Before.ps1 -DestinationPath c:\temp\After.ps1
 ```
 
 Once you have a before and after file, diff them to see what changed.  If you are new to file comparison tools and are looking for a recommendation, check out [ExamDiff](http://download.cnet.com/ExamDiff/3000-2248_4-10059626.html).
@@ -15,20 +15,20 @@ What works?  What doesn't?  What could be better?  Let me know!  Also, if you ca
 In the *test* folder are some test before/after .ps1 files along with script to test and compare them.
 1. In the 1_Input_Bad folder are a bunch of .ps1 files that have known formatting or upper/lower casing issues.  (Things fixed by the beautifier.)  These issues are broken out into separate files and folders.
 2. In the 3_Output_Correct folder are the same .ps1 files with the same basic content **but** all of the issues have been corrected.
-3. The Invoke-DTWBeautifyScriptTests.ps1 runs the tests:
+3. The Invoke-PrettifyScriptTests.ps1 runs the tests:
 	1. It loops through the files under 1_Input_Bad;
 	2. It runs the beautifier using the file from 1_Input_Bad as SourcePath and with a DestinationPath located under a new folder 2_Output_Test but with the same file name.
 	3. It then compares the new 2_Output_Test file with the corresponding file under 3_Output_Correct.
 	4. If the files are the same, cool, it worked.  If they are different if runs a diff and shows the results.
 
 
-## Two more things to know about Invoke-DTWBeautifyScriptTests.ps1
+## Two more things to know about Invoke-PrettifyScriptTests.ps1
 
 ### If you are running the test script repeatedly without changing beautifier code, use option -SkipModuleReload
-If you are running Invoke-DTWBeautifyScriptTests.ps1 over and over without making any code changes to the beautifier itself then specify parameter *-SkipModuleReload*.  By default Invoke-DTWBeautifyScriptTests.ps1 force reloads PowerShell-Beautifier.psd1 each time to make sure you are using the latest code.  However if you are only testing some changes under 1_Input_Bad and 3_Output_Correct, there's no need to reload the module.  Using -SkipModuleReload will make it run much faster.
+If you are running Invoke-PrettifyScriptTests.ps1 over and over without making any code changes to the beautifier itself then specify parameter *-SkipModuleReload*.  By default Invoke-PrettifyScriptTests.ps1 force reloads PowerShell-Beautifier.psd1 each time to make sure you are using the latest code.  However if you are only testing some changes under 1_Input_Bad and 3_Output_Correct, there's no need to reload the module.  Using -SkipModuleReload will make it run much faster.
 
 ```
-.\Invoke-DTWBeautifyScriptTests.ps1 -SkipModuleReload
+.\Invoke-PrettifyScriptTests.ps1 -SkipModuleReload
 ```
 
 ### If you want to specify a custom diff utility, set the path in a global variable $DTW_PS_Beautifier_DiffViewer
@@ -37,15 +37,15 @@ By default, if the file from 2_Output_Test is different from the one in 3_Output
 ```
 $DTW_PS_Beautifier_DiffViewer = 'C:\Program Files\ExamDiff Pro\ExamDiff.exe'
 
-.\Invoke-DTWBeautifyScriptTests.ps1
+.\Invoke-PrettifyScriptTests.ps1
 <this time something doesn't match so it opens the two files in ExamDiff>
 
 ... then make some test script changes ...
-.\Invoke-DTWBeautifyScriptTests.ps1
+.\Invoke-PrettifyScriptTests.ps1
 <this time something doesn't match so it opens the two files in ExamDiff>
 
 ... then make some test script changes ...
-.\Invoke-DTWBeautifyScriptTests.ps1
+.\Invoke-PrettifyScriptTests.ps1
 <this time everything matches so no diff viewer opens>
 ```
 
@@ -74,4 +74,4 @@ Whitespace\Indentation.ps1 is processed differently from the other files.  It is
 
 
 ## Want more info?
-Please review the source for Invoke-DTWBeautifyScriptTests.ps1.
+Please review the source for Invoke-PrettifyScriptTests.ps1.

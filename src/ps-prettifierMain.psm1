@@ -5,10 +5,10 @@ IMPORTANT NOTE: this utility rewrites your script in place!  Before running this
 on your script make sure you back up your script or commit any changes you have
 or run this on a copy of your script.
 
-This file contains the main function (Edit-DTWBeautifyScript, at end of this file)
-along with a number of key functions.  Read the help on Edit-DTWBeautifyScript or
+This file contains the main function (Invoke-PrettifyScript, at end of this file)
+along with a number of key functions.  Read the help on Invoke-PrettifyScript or
 load the module and run:
-Get-Help Edit-DTWBeautifyScript -Full
+Get-Help Invoke-PrettifyScript -Full
 
 See https://github.com/DTW-DanWard/PowerShell-Beautifier or http://dtwconsulting.com
 for more information.  I hope you enjoy using this utility!
@@ -47,7 +47,7 @@ function Initialize-ProcessVariables {
     # initialize file path information
     # source file to process
     [string]$script:SourcePath = $null
-    # destination file; this value is different from SourcePath if Edit-DTWBeautifyScript -DestinationPath is specified
+    # destination file; this value is different from SourcePath if Invoke-PrettifyScript -DestinationPath is specified
     [string]$script:DestinationPath = $null
 
     # indent text, value is overridden with param
@@ -371,7 +371,7 @@ function Import-ScriptContent {
   #endregion
   process {
     # get the file encoding of the file; it will be a type defined at System.Text.Encoding
-    [System.Text.Encoding]$script:SourceFileEncoding = Get-DTWFileEncoding -Path $DestinationPathTemp
+    [System.Text.Encoding]$script:SourceFileEncoding = Get-FileEncoding -Path $DestinationPathTemp
     # paths have already been validated so no testing of paths here
     # load file as a single String, needs to be single string for correct usage of
     # Tokenize method BUT we also need access to the original characters by byte so we can copy string values
@@ -1095,7 +1095,7 @@ function Test-AddSpaceFollowingToken {
 }
 #endregion
 
-#region Function: Edit-DTWBeautifyScript
+#region Function: Invoke-PrettifyScript
 
 <#
 .SYNOPSIS
@@ -1167,19 +1167,19 @@ This is most handy for getting the test script to run on Core on all OSes (all t
 test files use CRLF) but could also be useful for beautifying on one platform while
 targeting another... or it could just to keep your build manager happy.
 .EXAMPLE
-Edit-DTWBeautifyScript -Source c:\P\S1.ps1 -Destination c:\P\S1_New.ps1
+Invoke-PrettifyScript -Source c:\P\S1.ps1 -Destination c:\P\S1_New.ps1
 Gets content from c:\P\S1.ps1, cleans and writes to c:\P\S1_New.ps1
 .EXAMPLE
-Edit-DTWBeautifyScript -SourcePath c:\P\S1.ps1
+Invoke-PrettifyScript -SourcePath c:\P\S1.ps1
 Writes cleaned script results back into c:\P\S1.ps1
 .EXAMPLE
-dir c:\CodeFiles -Include *.ps1,*.psm1 -Recurse -IndentType FourSpaces | Edit-DTWBeautifyScript
+dir c:\CodeFiles -Include *.ps1,*.psm1 -Recurse -IndentType FourSpaces | Invoke-PrettifyScript
 For each .ps1 and .psm1 file, cleans and rewrites back into same file using tabs.
 .EXAMPLE
-Edit-DTWBeautifyScript -SourcePath c:\P\S1.ps1 -NewLine CRLF
+Invoke-PrettifyScript -SourcePath c:\P\S1.ps1 -NewLine CRLF
 Writes cleaned script results back into c:\P\S1.ps1 using Windows-style line endings.
 #>
-function Edit-DTWBeautifyScript {
+function Invoke-PrettifyScript {
   #region Function parameters
   [CmdletBinding()]
   param(
@@ -1305,13 +1305,13 @@ function Edit-DTWBeautifyScript {
 
     Copy-Item -LiteralPath $SourcePath -Destination $DestinationPathTemp -Force
     # if file is non-ASCII and doesn't have byte order marker, rewrite file in place with BOM
-    $TempFileEncoding = Get-DTWFileEncoding -Path $DestinationPathTemp
+    $TempFileEncoding = Get-FileEncoding -Path $DestinationPathTemp
 
     # check what name used in past - EnncodingName, BodyName?  HeaderName?
     # if not ASCII and no BOM, rewrite with BOM
     if (($TempFileEncoding -ne [System.Text.Encoding]::ASCII) -and ($TempFileEncoding.GetPreamble().Length -eq 0)) {
       # add BOM using FileEncoding
-      Add-DTWFileEncodingByteOrderMarker -Path $DestinationPathTemp -FileEncoding $TempFileEncoding
+      Add-FileEncodingByteOrderMarker -Path $DestinationPathTemp -FileEncoding $TempFileEncoding
     }
     #endregion
 
@@ -1373,7 +1373,7 @@ function Edit-DTWBeautifyScript {
         # if outputting cleaned script to stdout, write content from $DestinationPathTemp and delete that temp file
         # else copy file to destination
         if ($true -eq $StandardOutput) {
-          [string]$EncodingFileSystemProvider = Get-DTWFileEncodingSystemProviderNameFromTypeName ($TempFileEncoding).EncodingName
+          [string]$EncodingFileSystemProvider = Get-FileEncodingSystemProviderNameFromTypeName ($TempFileEncoding).EncodingName
           Get-Content -Path $DestinationPathTemp -Encoding $EncodingFileSystemProvider | Write-Output
           Remove-Item -Path $DestinationPathTemp -Force
         } else {
@@ -1389,5 +1389,5 @@ function Edit-DTWBeautifyScript {
     }
   }
 }
-Export-ModuleMember -Function Edit-DTWBeautifyScript
+Export-ModuleMember -Function Invoke-PrettifyScript
 #endregion
