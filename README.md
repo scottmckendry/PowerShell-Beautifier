@@ -1,6 +1,16 @@
-# PowerShell Beautifier
+# PowerShell Prettifier
 
-A whitespace reformatter and code cleaner for Windows PowerShell and PowerShell Core (all OSes). 
+A formatter for PowerShell scripts, forked from [DTW-DanWard/Powershell-Beautifier](https://github.com/DTW-DanWard/Powershell-Beautifier).
+
+**Why Fork?** The original project is no longer maintained - Last commit was in 2019, and there were a few things I wanted to change:
+
+- Spaces between comma seperated values. E.g. `@('a','b','c')` to `@('a', 'b', 'c')`
+- Indentation of Function documentation comments.
+- Option to disable alias expansion. I.e. `cd` to `Set-Location`. As far as I can tell, the original project always applies this change.
+
+**Why not PSScriptAnalyzer?** Simple. No Unicode support. I want to include emojis and nerd font icons in my scripts, and when using `Invoke-Formatter` from PSScriptAnalyzer, it replaces them with `?` 😢
+
+<hr>
 
 ## Formatting Matters
 
@@ -15,54 +25,60 @@ Here are the changes in a diff viewer:
 Here's another diff viewer showing only alias-replacement and casing changes:
 ![Before and after - whitespace](docs/Compare_CaseChanges.png)
 
-
 The PowerShell Beautifier makes these changes:
-* properly indents code inside {}, [], () and $() groups
-* cleans/rearranges all whitespace within a line
-* replaces aliases with the command names: ```dir → Get-ChildItem```
-* fixes command name casing: ```get-childitem → Get-ChildItem```
-* fixes parameter name casing: ```-path → -Path```
-* fixes [type] casing
-	* changes built-in shortcut / type accelerator: ```[STRING] → [string]```
-    *   ```[DSCLocalConfigurationManager] → [DscLocalConfigurationManager]```
-	* changes other types if in memory: ```[system.exception] → [System.Exception]```
-* ensures file ends with a new line.
 
+- properly indents code inside {}, [], () and $() groups
+- cleans/rearranges all whitespace within a line
+- replaces aliases with the command names: ```dir → Get-ChildItem```
+- fixes command name casing: ```get-childitem → Get-ChildItem```
+- fixes parameter name casing: ```-path → -Path```
+- fixes [type] casing
+  - changes built-in shortcut / type accelerator: ```[STRING] → [string]```
+  - ```[DSCLocalConfigurationManager] → [DscLocalConfigurationManager]```
+    - changes other types if in memory: ```[system.exception] → [System.Exception]```
+- ensures file ends with a new line.
 
 ### Release Testing
+
 *For each release* the PowerShell Beautifier is tested on:
-* Windows PowerShell (v5) (native);
-* PowerShell Core - Windows (native);
-* Ubuntu 16.04 and CentOS 7 ([official PowerShell Core Docker containers](https://hub.docker.com/r/microsoft/powershell/tags/)).
+
+- Windows PowerShell (v5) (native);
+- PowerShell Core - Windows (native);
+- Ubuntu 16.04 and CentOS 7 ([official PowerShell Core Docker containers](https://hub.docker.com/r/microsoft/powershell/tags/)).
 
 It is also occasionally tested natively on OSX, Ubuntu 16.04, Windows Server 2016 Core and Nano.
 
-
 ## Table of Contents
-* [Setup](#setup)
-* [Usage](#usage)
-	* [Run on single file updating in place with 2 spaces indentation](#run-on-single-file-updating-in-place-with-2-spaces-indentation)
-	* [Run on single file but indent with tabs](#run-on-single-file-but-indent-with-tabs)
-	* [Run on single file outputting to new file with 2 spaces indentation](#run-on-single-file-outputting-to-new-file-with-2-spaces-indentation)
-	* [Run on multiple files in a directory structure](#run-on-multiple-files-in-a-directory-structure)
-    * [Get cleaned content via standard output rather than updating file](#get-cleaned-content-via-standard-output-rather-than-updating-file)
-    * [Use LF as newline no matter what the OS](#use-lf-as-newline-no-matter-what-the-os)
-* [Want to Know More](#want-to-know-more)
-* [Contributing](#contributing)
-* [Credits](#credits)
-* [License](#license)
 
+- [Setup](#setup)
+- [Usage](#usage)
+  - [Run on single file updating in place with 2 spaces indentation](#run-on-single-file-updating-in-place-with-2-spaces-indentation)
+  - [Run on single file but indent with tabs](#run-on-single-file-but-indent-with-tabs)
+  - [Run on single file outputting to new file with 2 spaces indentation](#run-on-single-file-outputting-to-new-file-with-2-spaces-indentation)
+  - [Run on multiple files in a directory structure](#run-on-multiple-files-in-a-directory-structure)
+  - [Get cleaned content via standard output rather than updating file](#get-cleaned-content-via-standard-output-rather-than-updating-file)
+  - [Use LF as newline no matter what the OS](#use-lf-as-newline-no-matter-what-the-os)
+- [Want to Know More](#want-to-know-more)
+- [Contributing](#contributing)
+- [Credits](#credits)
+- [License](#license)
 
 ## Setup
+
 1. Download the PowerShell Beautifier utility. Clone it, zip it or get it from the PowerShell Gallery:
+
 ```
 Install-Module -Name PowerShell-Beautifier
 ```
+
 2. Import the module.  This takes a few seconds the first time but is fast thereafter.
+
 ```
 Import-Module .\PowerShell-Beautifier.psd1
 ```
+
 3. Confirm it is loaded correctly:
+
 ```
 Get-Help Invoke-PrettifyScript
 
@@ -85,37 +101,44 @@ SYNTAX
 
 ```
 
-
 ## Usage
 
-### Before using this utility on any file, back up your file!  
+### Before using this utility on any file, back up your file  
+
 Commit your file, run a backup, run the beautify utility on a copy first, whatever you have to do!  **If you don't use the DestinationPath parameter, it will rewrite your file in place!** I've run this utility on *many* script now but I don't know if something funky in your script might throw off the utility.  Be safe and back it up first!
 
 (FYI, the beautifier *only* rewrites your script at the end of processing if no errors occur.  However better safe than sorry - back it up!)
 
-
 So, assuming you've imported the module, how do you use it?
 
 ### Run on single file updating in place with 2 spaces indentation
+
 This rewrites the source file in place.  Two spaces is the default indent step so IndentType is not specified.
+
 ```
 Invoke-PrettifyScript C:\temp\MyFile.ps1
 ```
 
 ### Run on single file but indent with tabs
+
 This rewrites the source file in place using a tab at the indent step.
+
 ```
 Invoke-PrettifyScript C:\temp\MyFile.ps1 -IndentType Tabs
 ```
 
 ### Run on single file outputting to new file with 2 spaces indentation
+
 This doesn't modify the source file; it outputs the clean version to a new file.  Also uses the default indent step (2 spaces).
+
 ```
 Invoke-PrettifyScript -SourcePath C:\temp\MyFile.ps1 -DestinationPath c:\temp\MyFile_AFTER.ps1
 ```
 
 ### Run on multiple files in a directory structure
+
 Time for the pipeline.
+
 ```
 Get-ChildItem -Path c:\temp -Include *.ps1,*.psm1 -Recurse | Invoke-PrettifyScript
 ```
@@ -123,7 +146,9 @@ Get-ChildItem -Path c:\temp -Include *.ps1,*.psm1 -Recurse | Invoke-PrettifyScri
 Note: if you don't include the file extension filtering you'll need some other way to ignore folders (i.e. ignore PSIsContainer -eq $true) as Invoke-PrettifyScript will error for those.
 
 ### Get cleaned content via standard output rather than updating file
+
 If you want to receive the beautified content via stdout (most likely if you are calling from an external editor), use the -StandardOutput (or -StdOut) parameter:
+
 ```
 Invoke-PrettifyScript C:\temp\MyFile.ps1 -StandardOutput
 ```
@@ -131,36 +156,37 @@ Invoke-PrettifyScript C:\temp\MyFile.ps1 -StandardOutput
 When using -StandardOutput, the SourcePath is used for content but not updated, DestinationPath is ignored (if passed).  If an error occurs (syntax error in user script), no content is returned via stdout but stderr will have a concise error that can be displayed to the user.
 
 ### Use LF as newline no matter what the OS
+
 By default, when writing the file the beautifier will use the host OS's style for newlines.  To override this, use -NewLine and pass either CRLF or LF.
 
 For example, to force newline endings to be LF
+
 ```
 Invoke-PrettifyScript C:\temp\MyFile.ps1 -NewLine LF
 ```
 
-
-
-
 ## Want to Know More
-* [FAQ](docs/FAQ.md)
-* [How it works](docs/HowItWorks.md)
-* [How to test and add test cases](docs/Testing.md)
-* [How to automate testing the Beautifier and your scripts across OSes using Docker](test/Automation/README.md)
-* [Help add support for text editors](docs/ExternalEditors.md) like Atom and others
-* [Project roadmap](docs/Roadmap.md) - enhancements, external editors, BOM/encoding functions and more
-* [Change log](docs/ChangeLog.md)
 
+- [FAQ](docs/FAQ.md)
+- [How it works](docs/HowItWorks.md)
+- [How to test and add test cases](docs/Testing.md)
+- [How to automate testing the Beautifier and your scripts across OSes using Docker](test/Automation/README.md)
+- [Help add support for text editors](docs/ExternalEditors.md) like Atom and others
+- [Project roadmap](docs/Roadmap.md) - enhancements, external editors, BOM/encoding functions and more
+- [Change log](docs/ChangeLog.md)
 
 ## Contributing
-There are several ways to contribute: 
-* [test it and identify what works and what could be better](docs/Testing.md);
-* help with [adding support for text editors](docs/ExternalEditors.md);
-* and maybe even contribute code changes!
 
+There are several ways to contribute:
+
+- [test it and identify what works and what could be better](docs/Testing.md);
+- help with [adding support for text editors](docs/ExternalEditors.md);
+- and maybe even contribute code changes!
 
 ## Credits
+
 Dan Ward created the PowerShell Beautifier as a pet project back in 2011 but only recently added it to Github.
 
-
 ## License
+
 The PowerShell Beautifier is licensed under the [MIT license](LICENSE).
