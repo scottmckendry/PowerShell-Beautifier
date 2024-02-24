@@ -116,15 +116,19 @@ function Get-ValidCommandName {
   )
   #endregion
   process {
+    # Skip command validation if specified
+    if ($SkipCommandValidation) {
+      return $Name
+    } 
+
     # look up name in lookup table and return
     # if not found (new function added within script), add to list and return
-    # if ($MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].ContainsKey($Name)) {
-    #   $MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].Item($Name)
-    # } else {
-    #   $MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].Add($Name,$Name) > $null
-    #   $Name
-    # }
-    $Name
+    if ($MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].ContainsKey($Name)) {
+      $MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].Item($Name)
+    } else {
+      $MyInvocation.MyCommand.Module.PrivateData['ValidCommandNames'].Add($Name,$Name) > $null
+      $Name
+    }
   }
 }
 #endregion
@@ -1196,12 +1200,18 @@ function Invoke-PrettifyScript {
     [switch]$StandardOutput,
     [Parameter(Mandatory = $false,ValueFromPipeline = $false)]
     [ValidateSet('CRLF','LF')]
-    [string]$NewLine
+    [string]$NewLine,
+    [switch]$SkipCommandValidation
   )
   #endregion
   process {
 
     [datetime]$StartTime = Get-Date
+
+    # Add global variable to skip command validation
+    # if ($SkipCommandValidation) {
+      # $global:SkipCommandValidation = $true
+    # }
 
     #region Initialize script-level variables
     # initialize all script-level variables used in a cleaning process
